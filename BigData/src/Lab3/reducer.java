@@ -14,6 +14,9 @@ public class reducer {
 		
 		List<groupByPair<String, Integer>> groupByPairs = new ArrayList<groupByPair<String, Integer>>();
 		if(list != null){
+			//sort
+			comparator<String, Integer> comparator = new comparator<>();
+			comparator.sort(list);
 			
 			String prevKey = "";
 			groupByPair<String, Integer> groupPair = new groupByPair<String, Integer>();

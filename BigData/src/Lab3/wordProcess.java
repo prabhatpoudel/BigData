@@ -28,8 +28,10 @@ public class wordProcess {
 		List<List<keyValuePair<String, Integer>>> mappedPairs = new ArrayList<>();
 		for (int i = 0; i < mapper.length; i++) {
 			mapper[i] = new mapper(
-					"C:/Users/984713/Desktop/BigData/BigData/src/Lab3/words"
+					"C:/Users/DELL/Git_new/BigData/src/Lab3/words"
 							+ i + ".txt");
+			
+			
 			mapper[i].mapValues();
 			// mappers[i].printPairs();
 
