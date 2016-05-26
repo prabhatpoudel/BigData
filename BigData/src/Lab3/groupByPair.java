@@ -3,43 +3,39 @@ package Lab3;
 import java.util.ArrayList;
 import java.util.List;
 
-public class groupByPair  implements Comparable<groupByPair>{
+public class groupByPair<K, V> {
 
-	private String key;
-	private List<Integer> values;
+	private K key;
+	private List<V> values;
 	
-	groupByPair(String key)
-	{
-		this.key =  key;
-		values = new ArrayList<Integer>();
-		addValue();
+	public groupByPair(K key, List<V> values){
+		this.key = key;
+		this.values = values;
 	}
 	
-	public void addValue()
-	{
-		this.values.add(1);
+	public groupByPair(){
+		
 	}
-	
-	public String getKey()
-	{
-		return this.key;
+
+	public K getKey() {
+		return key;
 	}
-	
-	public List<Integer> getValues()
-	{
+
+	public void setKey(K key) {
+		this.key = key;
+	}
+
+	public List<V> getValues() {
 		return values;
 	}
+
+	public void setValues(List<V> values) {
+		this.values = values;
+	}
 	
 	@Override
-	public String toString()
-	{
-		return "< " + key + " , " + values.toString() + " >";
+	public String toString(){
+		return "[" + key + "," + values + "]";
 	}
 
-
-	@Override
-	public int compareTo(groupByPair o) {
-		// TODO Auto-generated method stub
-		return key.compareTo(o.getKey());
-	}
 }

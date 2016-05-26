@@ -1,5 +1,8 @@
 package Lab3;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import Lab3.groupByPair;
 
 public class wordProcess {
@@ -13,66 +16,133 @@ public class wordProcess {
 	}
 
 	public int getPartition(String key) {
-		return (int) Math.abs(key.hashCode() % reducer.length);
+		return (int) key.hashCode() % reducer.length;
 	}
 
 	public static void main(String args[]) {
-		/*
-		 * mapper map = new
-		 * mapper("C:/Users/DELL/Git_new/BigData/src/Lab3/words.txt");
-		 * map.mapValues(); map.printUnSortedList(); map.printSortedList();
-		 * 
-		 * reducer reduce = new reducer(map.mapValues());
-		 * 
-		 * reduce.groupKey();
-		 * 
-		 * reduce.printGroupedList(); reduce.printReducedList();
-		 */
 		wordProcess wp = new wordProcess(3, 4);
-		wp.shuffleSort();
+		wp.processWord();
 	}
 
-	public void shuffleSort() {
-		for (int r = 0; r < reducer.length; r++) {
-			reducer[r] = new reducer();
-		}
-
+	private void processWord() {
+		List<List<keyValuePair<String, Integer>>> mappedPairs = new ArrayList<>();
 		for (int i = 0; i < mapper.length; i++) {
-			// System.out.println("Mapper " + i + " output");
-
-			mapper[i] = new mapper("C:/Users/DELL/Git_new/BigData/src/Lab3/words"+i+".txt");
+			mapper[i] = new mapper(
+					"C:/Users/984713/Desktop/BigData/BigData/src/Lab3/words"
+							+ i + ".txt");
 			mapper[i].mapValues();
 			// mappers[i].printPairs();
 
-			for (keyValuePair<String, Integer> m : mapper[i].getValuesList()) {
-				reducer[getPartition(m.getKey())].addReduceList(m);
+			List<keyValuePair<String, Integer>> list = mapper[i].valuesList;
+			System.out.println("\n_____________Mapper " + i
+					+ " Output_____________\n");
+			mappedPairs.add(list);
+			printListOfkeyValuePair(list);
+		}
+
+		// Now apply shuffle Sort
+
+		List<List<keyValuePair<String, Integer>>> partitionPairs = shuffleSort(mappedPairs);
+
+		// Combine the mapped and partioned pairs to in a single list
+		List<List<groupByPair<String, Integer>>> reducerInputs = new ArrayList<List<groupByPair<String, Integer>>>();
+		for (int i = 0; i < reducer.length; i++) {
+
+			reducer reducer = new reducer();
+			List<groupByPair<String, Integer>> reducerInput = reducer
+					.groupKey(partitionPairs.get(i));
+			System.out.println("\n_____________Reducer " + i
+					+ " Input_____________\n");
+			printListOfGroupByPair(reducerInput);
+
+			reducerInputs.add(reducerInput);
+
+		}
+
+		// Reduce the pairs values
+		for (int i = 0; i < reducer.length; i++) {
+
+			reducer reducer = new reducer();
+			List<groupByPair<String, Integer>> reducerInput = reducerInputs
+					.get(i);
+			System.out.println("\n_____________Reducer " + i
+					+ " Output_____________\n");
+			List<keyValuePair<String, Integer>> reducerOutput = reducer
+					.wordReduce(reducerInput);
+			printListOfkeyValuePair(reducerOutput);
+		}
+	}
+
+	private List<List<keyValuePair<String, Integer>>> shuffleSort(
+			List<List<keyValuePair<String, Integer>>> allMappedPairs) {
+		List<List<keyValuePair<String, Integer>>> partitionPairs = new ArrayList<List<keyValuePair<String, Integer>>>();
+		List<List<List<keyValuePair<String, Integer>>>> shuffledKeysList = new ArrayList<>();
+
+		for (int i = 0; i < this.mapper.length; i++) {
+			shuffledKeysList.add(new ArrayList<List<keyValuePair<String, Integer>>>());
+		}
+		for (int i = 0; i < this.mapper.length; i++) {
+			for (int j = 0; j < this.reducer.length; j++) {
+				shuffledKeysList.get(i).add(new ArrayList<keyValuePair<String, Integer>>());
 			}
 		}
 
-		System.out.println("------------------------------------");
-		for (int m = 0; m < reducer.length; m++) {
-			System.out.println("-----Reducer " + m + " mapped output--------");
-			reducer[m].getReduceList().stream().sorted().forEach(System.out::println);
+		for (int i = 0; i < this.reducer.length; i++) {
+			partitionPairs.add(new ArrayList<keyValuePair<String, Integer>>());
 		}
 
-		System.out.println("------------------------------------");
-		for (int r = 0; r < reducer.length; r++) {
-			System.out.println("Reducer " + r + " merged output");
-			reducer[r].groupKey().stream().sorted().forEach(System.out::println);
+		// shuffle step
+		int i = 0;
+		for (List<keyValuePair<String, Integer>> list : allMappedPairs) {
+			for (keyValuePair<String, Integer> pair : list) {
+				int partitionLevel = getPartition(pair.getKey());
+
+				shuffledKeysList.get(i).get(partitionLevel).add(pair);
+				partitionPairs.get(partitionLevel).add(pair);
+			}
+
+			i++;
+
 		}
-		// System.out.println("------------------------------------");
-		// for (int red= 0; red < reducer.length; red++) {
-		// System.out.println("Reducer " + red + " reduced output");
-		// reducer[red].groupKey().stream().sorted().forEach(System.out::println);
-		// }
-		System.out.println("--------------------------");
-		for (int r = 0; r < reducer.length; r++) {
-			System.out.println("Reducer "+r+" output");
-			for (groupByPair groupWord : reducer[r].groupKey()) {
-				System.out.println("< " + groupWord.getKey() + " , "
-						+ groupWord.getValues().stream().mapToInt(i -> i.intValue()).sum() + " >");
+		comparator<String, Integer> comparator = new comparator<>();
+		for (int j = 0; j < this.mapper.length; j++) {
+			for (int k = 0; k < this.reducer.length; k++) {
+				System.out.println("\n________Pairs sent from Mapper " + j + " to Reducer " + k + "__________\n");
+				if (shuffledKeysList.size() > j && shuffledKeysList.get(j).size() > k) {
+					List<keyValuePair<String, Integer>> partitionedList = shuffledKeysList.get(j).get(k);
+					comparator.sort(partitionedList);
+					for (keyValuePair<String, Integer> keyVal : partitionedList)
+						System.out.println("<" + keyVal.getKey() + "," + keyVal.getValue() + ">");
+				}
+			}
+		}
+
+		return partitionPairs;
+	}
+
+	private void printListOfkeyValuePair(
+			List<keyValuePair<String, Integer>> list) {
+		// TODO Auto-generated method stub
+		if (list != null) {
+			for (keyValuePair<String, Integer> word : list) {
+				System.out.println("<" + word.getKey() + "," + word.getValue()
+						+ ">");
+
 			}
 		}
 	}
+
+	private static void printListOfGroupByPair(
+			List<groupByPair<String, Integer>> list) {
+		if (list != null) {
+			for (groupByPair<String, Integer> item : list) {
+				System.out.println("<" + item.getKey() + "," + item.getValues()
+						+ ">");
+
+			}
+		}
+	}
+	
+	
 
 }

@@ -1,6 +1,7 @@
 package Lab3;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -8,68 +9,76 @@ import Lab3.keyValuePair;
 import Lab3.groupByPair;
 
 public class reducer {
-	
-	public  List<groupByPair> reducedList = new ArrayList<groupByPair>();
-	public List<keyValuePair<String, Integer>> pairList = new ArrayList<keyValuePair<String, Integer>>();
-	
-	public reducer(List<keyValuePair<String, Integer>> list)
-	{
-		this.pairList=list;
-	}
-	
-	public reducer()
-	{
-		reducedList = new ArrayList<groupByPair>();
-		pairList = new ArrayList<keyValuePair<String, Integer>>();
-	}
-	public List<groupByPair> groupKey() {
-		Collections.sort(pairList);
-		for (int i = 0; i < pairList.size(); i++) {
-			String key = pairList.get(i).getKey();
-			groupByPair group = new groupByPair(key);
-
-			// Searching for the Same Key if exist then add the value 1 in the
-			// list
-			while (i < pairList.size() - 1 && pairList.get(i + 1).getKey().equals(key))
-			// if(valuesList.get(i).getKey().equals(key))
-			{
-				group.addValue();
-				i++;
+		
+	public List<groupByPair<String, Integer>> groupKey(List<keyValuePair<String, Integer>> list){
+		
+		List<groupByPair<String, Integer>> groupByPairs = new ArrayList<groupByPair<String, Integer>>();
+		if(list != null){
+			
+			String prevKey = "";
+			groupByPair<String, Integer> groupPair = new groupByPair<String, Integer>();
+			for(keyValuePair<String, Integer> keyVal : list){
+				
+				String key = keyVal.getKey();
+				int val = keyVal.getValue();
+				
+				if(prevKey.toLowerCase().equals(key.toLowerCase())){
+					List<Integer> values = groupPair.getValues();
+					List<Integer> listValues = new ArrayList<>(values);
+					listValues.add(val);
+					groupPair.setValues(listValues);
+				}
+				
+				else{
+					
+					if(groupPair.getKey() != null)
+						groupByPairs.add(groupPair);
+					groupPair = new groupByPair<>();
+					groupPair.setKey(key);
+					groupPair.setValues(Arrays.asList(val));
+				}
+				
+				prevKey = key;
 			}
-			reducedList.add(group);
+			if(groupPair.getKey() != null)
+				groupByPairs.add(groupPair);
+			
+			return groupByPairs;
 		}
-		return reducedList;
-	}
-
-	public void printGroupedList()
-	{
-		System.out.println("-------Grouped List---------");
-		reducedList.stream().forEach(System.out::println);
-		System.out.println("----------------------------");
+		
+		return null;
 	}
 	
-	public void printReducedList()
-	{
-		for (groupByPair reduceWord : reducedList) {
-			System.out.println("< " + reduceWord.getKey() + " , "
-					+ reduceWord.getValues().stream().mapToInt(i -> i.intValue()).sum() + " >");
+	public keyValuePair<String, Integer> reducePairs(groupByPair<String, Integer> groupByPair){
+		
+		keyValuePair<String, Integer> keyVal = new keyValuePair<>();
+		if(groupByPair != null){
+			String key = groupByPair.getKey();
+			int sum = 0;
+			for(Integer val : groupByPair.getValues()){
+				sum += val;
+			}
+			
+			return new keyValuePair<>(key, sum);
 		}
-
-	}
-	
-	public void addReduceList(keyValuePair<String,Integer> v)
-	{
-		pairList.add(v);
-	}
-	
-	public List<keyValuePair<String, Integer>> getReduceList() {
-		return pairList;
+		
+		return null;
 	}
 
-	@Override
-	public String toString() {
-		return "reducer [reducedList=" + reducedList + ", pairList=" + pairList + "]";
+	public List<keyValuePair<String, Integer>> wordReduce(List<groupByPair<String, Integer>> pairs){
+		
+		List<keyValuePair<String, Integer>> reducedList = new ArrayList<>();
+		if(pairs != null){
+		
+			for(groupByPair<String, Integer> pair : pairs){
+				
+				reducedList.add(reducePairs(pair));
+			}
+			
+			return reducedList;
+		}
+		
+		return null;
 	}
-	
 	
 }

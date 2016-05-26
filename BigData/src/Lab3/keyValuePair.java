@@ -1,12 +1,17 @@
 package Lab3;
 
-public class keyValuePair<k extends Comparable<k>, v> implements Comparable<keyValuePair<k, v>> {
+public class keyValuePair<k , v>  {
 	private k key;
 	private v value;
 
 	public keyValuePair(k key, v value) {
 		this.key = key;
 		this.value = value;
+	}
+	
+	public keyValuePair()
+	{
+		
 	}
 
 	public k getKey() {
@@ -31,9 +36,4 @@ public class keyValuePair<k extends Comparable<k>, v> implements Comparable<keyV
 	}
 
 
-	@Override
-	public int compareTo(keyValuePair<k, v> o) {
-		// TODO Auto-generated method stub
-		return key.compareTo(o.getKey());
-	}
 }

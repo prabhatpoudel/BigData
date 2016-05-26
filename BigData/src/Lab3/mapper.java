@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import Lab3.keyValuePair;
 
@@ -28,10 +29,21 @@ public class mapper {
 			while (scan.hasNextLine()) {
 				Scanner line = new Scanner(scan.nextLine());
 				while (line.hasNext()) {
-					String word = line.next().replace('"', '\0').trim().toLowerCase();
-					if (word.matches("\"??([A-Za-z]+-??[A-Za-z]+|[A-Za-z])\"??\\.??")) {
-						valuesList.add(new keyValuePair<String, Integer>(word, 1));
+					String word = line.next().replace("\"", "").replace("'", "").trim().toLowerCase();
+					String[] words=word.split("-");
+					for (String token : words) {
+
+						// check for valid word
+						if (Pattern.matches("([a-zA-Z]+\\.)||([a-zA-Z]+)", token)) {
+							token = token.replace(".", "");
+							valuesList.add(new keyValuePair<String, Integer>(token, 1));
+						}
 					}
+//					
+//					
+//					if (word.matches("([a-zA-Z]+\\.)||([a-zA-Z]+)")) {
+//						valuesList.add(new keyValuePair<String, Integer>(word, 1));
+//					}
 				}
 			}
 			// sorting
