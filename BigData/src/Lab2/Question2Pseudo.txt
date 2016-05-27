@@ -1,0 +1,19 @@
+Part 1: pseudo code for f.
+int f(x)
+{
+  if(x == 3 || x == 4) return x;
+  else return 1;
+}
+
+Part 2: pseudo code for g.
+int g(x, y)
+{
+  return x*y;
+}
+
+Part 3: Specification of initial valud
+Initial value = 0
+
+Part 4: Interpretation of final value
+
+	Nice if g(x,y)%2 =0 else Not nice
