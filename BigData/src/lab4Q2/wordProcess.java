@@ -1,5 +1,7 @@
 package lab4Q2;
 
+
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,16 +22,19 @@ public class wordProcess {
 	}
 
 	public static void main(String args[]) {
-		wordProcess wp = new wordProcess(3, 4);
+		wordProcess wp = new wordProcess(4, 3);
 		wp.processWord();
 	}
 
 	private void processWord() {
-		
-		List<List<keyValuePair<Character, keyValuePair<Integer,Integer>>>> mappedPairs = new ArrayList<>();
+        
+		final String dir = System.getProperty("user.dir");
+        //System.out.println("current dir = " + dir);
+        
+		List<List<keyValuePair<Character,keyValuePair<Integer, Integer>>>> mappedPairs = new ArrayList<>();
 		for (int i = 0; i < mapper.length; i++) {
-			mapper[i] = new mapper(
-					"C:/Users/DELL/Git_new/BigData/src/LabQ2/words"
+			mapper[i] = new mapper(dir+
+					"/src/Lab4Q2/words"
 							+ i + ".txt");
 			
 			
@@ -40,19 +45,19 @@ public class wordProcess {
 			System.out.println("\n_____________Mapper " + i
 					+ " Output_____________\n");
 			mappedPairs.add(list);
-			//printListOfkeyValuePair(list);
+			printListOfkeyValuePair(list);
 		}
 
 		// Now apply shuffle Sort
 
-		List<keyValuePair<Character,keyValuePair<Integer, Integer>>> partitionPairs = shuffleSort(mappedPairs);
-
+		List<List<keyValuePair<Character,keyValuePair<Integer, Integer>>>> partitionPairs = shuffleSort(mappedPairs);
+	
 		// Combine the mapped and partioned pairs to in a single list
-		List<List<groupByPair<String, Integer>>> reducerInputs = new ArrayList<List<groupByPair<String, Integer>>>();
+		List<List<groupByPair<Character,keyValuePair<Integer, Integer>>>> reducerInputs = new ArrayList<List<groupByPair<Character,keyValuePair<Integer, Integer>>>>();
 		for (int i = 0; i < reducer.length; i++) {
 
 			reducer reducer = new reducer();
-			List<groupByPair<String, Integer>> reducerInput = reducer
+			List<groupByPair<Character,keyValuePair<Integer, Integer>>> reducerInput = reducer
 					.groupKey(partitionPairs.get(i));
 			System.out.println("\n_____________Reducer " + i
 					+ " Input_____________\n");
@@ -66,38 +71,40 @@ public class wordProcess {
 		for (int i = 0; i < reducer.length; i++) {
 
 			reducer reducer = new reducer();
-			List<groupByPair<String, Integer>> reducerInput = reducerInputs
+			List<groupByPair<Character,keyValuePair<Integer, Integer>>> reducerInput = reducerInputs
 					.get(i);
 			System.out.println("\n_____________Reducer " + i
 					+ " Output_____________\n");
-			List<keyValuePair<String, Integer>> reducerOutput = reducer
+			List<keyValuePair<Character, Double>> reducerOutput = reducer
 					.wordReduce(reducerInput);
-			printListOfkeyValuePair(reducerOutput);
+			printKeyValue(reducerOutput);
 		}
 	}
-	
-	private List<List<keyValuePair<Character, keyValuePair<Integer,Integer>>>> shuffleSort(
-			List<List<keyValuePair<Character, keyValuePair<Integer,Integer>>>> allMappedPairs) {
-		List<List<keyValuePair<String, Integer>>> partitionPairs = new ArrayList<List<keyValuePair<String, Integer>>>();
-		List<List<List<keyValuePair<Character, keyValuePair<Integer, Integer>>>>> shuffledKeysList = new ArrayList<>();
+
+
+
+	private List<List<keyValuePair<Character,keyValuePair<Integer, Integer>>>> shuffleSort(
+			List<List<keyValuePair<Character,keyValuePair<Integer, Integer>>>> allMappedPairs) {
+		List<List<keyValuePair<Character,keyValuePair<Integer, Integer>>>> partitionPairs = new ArrayList<List<keyValuePair<Character,keyValuePair<Integer, Integer>>>>();
+		List<List<List<keyValuePair<Character,keyValuePair<Integer, Integer>>>>> shuffledKeysList = new ArrayList<>();
 
 		for (int i = 0; i < this.mapper.length; i++) {
-			shuffledKeysList.add(new ArrayList<List<keyValuePair<String, Integer>>>());
+			shuffledKeysList.add(new ArrayList<List<keyValuePair<Character,keyValuePair<Integer, Integer>>>>());
 		}
 		for (int i = 0; i < this.mapper.length; i++) {
 			for (int j = 0; j < this.reducer.length; j++) {
-				shuffledKeysList.get(i).add(new ArrayList<keyValuePair<String, Integer>>());
+				shuffledKeysList.get(i).add(new ArrayList<keyValuePair<Character,keyValuePair<Integer, Integer>>>());
 			}
 		}
 
 		for (int i = 0; i < this.reducer.length; i++) {
-			partitionPairs.add(new ArrayList<keyValuePair<String, Integer>>());
+			partitionPairs.add(new ArrayList<keyValuePair<Character,keyValuePair<Integer, Integer>>>());
 		}
 
 		// shuffle step
 		int i = 0;
-		for (List<keyValuePair<Character, keyValuePair<Integer,Integer>>> list : allMappedPairs) {
-			for (keyValuePair<Character, keyValuePair<Integer,Integer>> pair : list) {
+		for (List<keyValuePair<Character,keyValuePair<Integer, Integer>>> list : allMappedPairs) {
+			for (keyValuePair<Character,keyValuePair<Integer, Integer>> pair : list) {
 				int partitionLevel = getPartition(pair.getKey().toString());
 
 				shuffledKeysList.get(i).get(partitionLevel).add(pair);
@@ -107,27 +114,28 @@ public class wordProcess {
 			i++;
 
 		}
-		comparator<String, Integer> comparator = new comparator<>();
+		comparator<Character,keyValuePair<Integer, Integer>> comparator = new comparator<>();
 		for (int j = 0; j < this.mapper.length; j++) {
 			for (int k = 0; k < this.reducer.length; k++) {
 				System.out.println("\n________Pairs sent from Mapper " + j + " to Reducer " + k + "__________\n");
 				if (shuffledKeysList.size() > j && shuffledKeysList.get(j).size() > k) {
-					List<keyValuePair<String, Integer>> partitionedList = shuffledKeysList.get(j).get(k);
+					List<keyValuePair<Character,keyValuePair<Integer, Integer>>> partitionedList = shuffledKeysList.get(j).get(k);
 					comparator.sort(partitionedList);
-					for (keyValuePair<String, Integer> keyVal : partitionedList)
+					for (keyValuePair<Character,keyValuePair<Integer, Integer>> keyVal : partitionedList)
 						System.out.println("<" + keyVal.getKey() + "," + keyVal.getValue() + ">");
 				}
 			}
 		}
 
 		return partitionPairs;
-	}
+	
 
+	}
 	private void printListOfkeyValuePair(
-			List<keyValuePair<String, Integer>> list) {
+			List<keyValuePair<Character, keyValuePair<Integer, Integer>>> list) {
 		// TODO Auto-generated method stub
 		if (list != null) {
-			for (keyValuePair<String, Integer> word : list) {
+			for (keyValuePair<Character, keyValuePair<Integer, Integer>> word : list) {
 				System.out.println("<" + word.getKey() + "," + word.getValue()
 						+ ">");
 
@@ -136,9 +144,9 @@ public class wordProcess {
 	}
 
 	private static void printListOfGroupByPair(
-			List<groupByPair<String, Integer>> list) {
-		if (list != null) {
-			for (groupByPair<String, Integer> item : list) {
+			List<groupByPair<Character, keyValuePair<Integer, Integer>>> reducerInput) {
+		if (reducerInput != null) {
+			for (groupByPair<Character,keyValuePair<Integer, Integer>> item : reducerInput) {
 				System.out.println("<" + item.getKey() + "," + item.getValues()
 						+ ">");
 
@@ -146,6 +154,16 @@ public class wordProcess {
 		}
 	}
 	
-	
+	private void printKeyValue(List<keyValuePair<Character, Double>> reducerOutput) {
+		// TODO Auto-generated method stub
+		if(reducerOutput !=null)
+		{
+			for(keyValuePair<Character,Double> item : reducerOutput)
+			{
+				System.out.println("< "+item.getKey()+","+item.getValue().doubleValue()+">");
+			}
+		}
+		
+	}
 
 }

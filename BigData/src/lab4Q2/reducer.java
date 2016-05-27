@@ -10,24 +10,24 @@ import lab4Q2.groupByPair;
 
 public class reducer {
 		
-	public List<groupByPair<String, Integer>> groupKey(List<keyValuePair<String, Integer>> list){
+	public List<groupByPair<Character,keyValuePair<Integer, Integer>>> groupKey(List<keyValuePair<Character,keyValuePair<Integer, Integer>>> list){
 		
-		List<groupByPair<String, Integer>> groupByPairs = new ArrayList<groupByPair<String, Integer>>();
+		List<groupByPair<Character,keyValuePair<Integer, Integer>>> groupByPairs = new ArrayList<groupByPair<Character,keyValuePair<Integer, Integer>>>();
 		if(list != null){
 			//sort
-			comparator<String, Integer> comparator = new comparator<>();
+			comparator<Character,keyValuePair<Integer, Integer>> comparator = new comparator<>();
 			comparator.sort(list);
 			
-			String prevKey = "";
-			groupByPair<String, Integer> groupPair = new groupByPair<String, Integer>();
-			for(keyValuePair<String, Integer> keyVal : list){
+			Character prevKey = Character.MIN_VALUE;
+			groupByPair<Character,keyValuePair<Integer, Integer>> groupPair = new groupByPair<Character,keyValuePair<Integer, Integer>>();
+			for(keyValuePair<Character,keyValuePair<Integer, Integer>> keyVal : list){
 				
-				String key = keyVal.getKey();
-				int val = keyVal.getValue();
+				Character key = keyVal.getKey();
+				keyValuePair<Integer,Integer> val = keyVal.getValue();
 				
-				if(prevKey.toLowerCase().equals(key.toLowerCase())){
-					List<Integer> values = groupPair.getValues();
-					List<Integer> listValues = new ArrayList<>(values);
+				if(prevKey.toString().toLowerCase().equals(key.toString().toLowerCase())){
+					List<keyValuePair<Integer,Integer>> values = groupPair.getValues();
+					List<keyValuePair<Integer,Integer>> listValues = new ArrayList<>(values);
 					listValues.add(val);
 					groupPair.setValues(listValues);
 				}
