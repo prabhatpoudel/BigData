@@ -6,7 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class comparator<k,v> {
+public class stripsComparator<k,v> {
 
 	public <k extends Comparable<? super k>> List<keyValuePair<k,v>> sort(List<keyValuePair<k,v>> list) {
 
