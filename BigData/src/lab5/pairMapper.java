@@ -10,14 +10,14 @@ import java.util.regex.Pattern;
 
 import lab5.keyValuePair;
 
-public class mapper {
+public class pairMapper {
 
 	public List<keyValuePair<keyValuePair<Integer, Integer>,Integer>> valuesList = new ArrayList<>();
 	public List<keyValuePair<Integer,Integer>> initialValue = new ArrayList<>();
 
 	String filename;
 
-	public mapper(String fileLocation) {
+	public pairMapper(String fileLocation) {
 		this.filename = fileLocation;
 	}
 
@@ -33,25 +33,26 @@ public class mapper {
 				List<Integer> numberArray = new ArrayList<>();
 				while (line.hasNext()) {
 					int number = line.nextInt(); 
-					System.out.println(number);
-					numberArray.add(number);
 					
-					for(int i =0; i<numberArray.size(); i++)
-					{
-					   for(int j = i; j<numberArray.size(); j++)
-					   {
-						   
-					   }
-					}
-/*
-						// check for valid word
-//						if (Pattern.matches("([a-zA-Z]+\\.)||([a-zA-Z]+)", token)) {
-//							token = token.replace(".", "");
-//							valuesList.add(new keyValuePair<keyValuePair<Integer, Integer>,Integer>(token.charAt(0),new keyValuePair<Integer,Integer> (token.length(), 1)));
-//						}
-					}*/
-
+					numberArray.add(number);
+					//System.out.println(numberArray);
 				}
+				for(int i =0; i<numberArray.size(); i++)
+				{
+					//System.out.println("     "+numberArray.get(i));
+				   for(int j = i+1; j<numberArray.size(); j++)
+				   {
+					   
+					   if(numberArray.get(i)==numberArray.get(j))
+					   {
+						   break;
+					   }
+					   //System.out.println(" I am value of J "+numberArray.get(j));
+					   initialValue.add(new keyValuePair<Integer,Integer> (numberArray.get(i),numberArray.get(j)));
+					   valuesList.add(new keyValuePair<keyValuePair<Integer, Integer>,Integer> (new keyValuePair<Integer,Integer> (numberArray.get(i),numberArray.get(j)) ,1));
+				   }
+				}
+				//System.out.println(valuesList);
 			}
 
 		} catch (FileNotFoundException e) {
@@ -59,23 +60,26 @@ public class mapper {
 		
 	}
 
-/*	public List<keyValuePair<Character,keyValuePair<Integer, Integer>>> inMapperPairs() {
+	public List<keyValuePair<keyValuePair<Integer, Integer>,Integer>> inMapperPairs() {
 		mapValues();
-		List<keyValuePair<Character,keyValuePair<Integer, Integer>>> inMapperList = new ArrayList<>();
+//		System.out.println(valuesList);
+		List<keyValuePair<keyValuePair<Integer, Integer>,Integer>> inMapperList = new ArrayList<>();
 
-		for (keyValuePair<Character,keyValuePair<Integer, Integer>> valuePair : valuesList) {
+		for (keyValuePair<keyValuePair<Integer, Integer>,Integer> valuePair : valuesList) {
 			if (inMapperList.size() < 1) {
 				inMapperList.add(valuePair);
 			} else {
 				boolean matched = false;
 				for (int i = 0; i < inMapperList.size(); i++) {
 
-					if (inMapperList.get(i).getKey().equals(valuePair.getKey())) {
+					if (inMapperList.get(i).getKey().getKey().equals(valuePair.getKey().getKey()) 
+							&& inMapperList.get(i).getKey().getValue().equals(valuePair.getKey().getValue())) {
 					
-						keyValuePair<Integer,Integer> keyValue= inMapperList.get(i).getValue();
-						keyValuePair<Integer,Integer> pairKeyValue= valuePair.getValue();
+//						System.out.println("<"+inMapperList.get(i).getKey().getKey()+"><"+inMapperList.get(i).getKey().getValue()+">");
+						int keyValue= inMapperList.get(i).getValue();
+						int pairKeyValue= valuePair.getValue();
+						inMapperList.get(i).setValue(keyValue+pairKeyValue);
 						
-						inMapperList.get(i).setValue(new keyValuePair<Integer,Integer>(keyValue.getKey()+pairKeyValue.getKey(),keyValue.getValue()+pairKeyValue.getValue()));
 						matched = true;
 						break;
 					}
@@ -87,7 +91,7 @@ public class mapper {
 		}
 		return inMapperList;
 
-	}*/
+	}
 
 	public void printSortedList() {
 		System.out.println("-----------Sorted List-----------");
