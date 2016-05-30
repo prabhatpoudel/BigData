@@ -77,7 +77,7 @@ public class stripsNumberProcess {
 			List<groupByPair<Integer,HashMap<Integer,Integer>>> reducerInput = reducerInputList.get(i);
 			System.out.println("\n_____________Reducer " + i
 					+ " Output_____________\n");
-			List<keyValuePair<Integer,HashMap<Integer,Integer>>> reducerOutput = reducer
+			List<keyValuePair<Integer,HashMap<Integer,Double>>> reducerOutput = reducer
 					.numberReduce(reducerInput);
 			printKeyValue(reducerOutput);
 		}
@@ -158,11 +158,11 @@ public class stripsNumberProcess {
 		}
 	}
 	
-	private void printKeyValue(List<keyValuePair<Integer,HashMap<Integer,Integer>>> reducerOutput) {
+	private void printKeyValue(List<keyValuePair<Integer,HashMap<Integer,Double>>> reducerOutput) {
 		// TODO Auto-generated method stub
 		if(reducerOutput !=null)
 		{
-			for(keyValuePair<Integer,HashMap<Integer,Integer>> item : reducerOutput)
+			for(keyValuePair<Integer,HashMap<Integer,Double>> item : reducerOutput)
 			{
 				System.out.println("< "+item.getKey()+","+item.getValue()+">");
 			}

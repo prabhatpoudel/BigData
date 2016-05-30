@@ -77,7 +77,7 @@ public class pairNumberProcess {
 			List<groupByPair<keyValuePair<Integer, Integer>,Integer>> reducerInput = reducerInputList.get(i);
 			System.out.println("\n_____________Reducer " + i
 					+ " Output_____________\n");
-			List<keyValuePair<keyValuePair<Integer,Integer>, Integer>> reducerOutput = reducer
+			List<keyValuePair<keyValuePair<Integer,Integer>, Double>> reducerOutput = reducer
 					.numberReduce(reducerInput);
 			printKeyValue(reducerOutput);
 		}
@@ -157,11 +157,11 @@ public class pairNumberProcess {
 		}
 	}
 	
-	private void printKeyValue(List<keyValuePair<keyValuePair<Integer, Integer>,Integer>> reducerOutput) {
+	private void printKeyValue(List<keyValuePair<keyValuePair<Integer, Integer>,Double>> reducerOutput) {
 		// TODO Auto-generated method stub
 		if(reducerOutput !=null)
 		{
-			for(keyValuePair<keyValuePair<Integer,Integer>,Integer> item : reducerOutput)
+			for(keyValuePair<keyValuePair<Integer,Integer>,Double> item : reducerOutput)
 			{
 				System.out.println("< "+item.getKey()+","+item.getValue()+">");
 			}

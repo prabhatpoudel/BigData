@@ -63,44 +63,48 @@ public class stripsReducer {
 					finalHashValue.putAll(val);
 				} else {
 					for (Entry<Integer, Integer> item : val.entrySet()) {
-						// System.out.println("****Checking Item********");
-						// System.out.println(item);
-						// System.out.println("Key "+item.getKey());
-						// System.out.println("Key "+item.getValue());
-						// System.out.println("finalHashValue Key
-						// "+finalHashValue.get(item.getKey()));
-
 						if (finalHashValue.get(item.getKey()) == null) {
 							finalHashValue.put(item.getKey(), item.getValue());
 						} else {
 							finalHashValue.put(item.getKey(), finalHashValue.get(item.getKey()) + item.getValue());
 						}
-						// System.out.println("hashValue "+finalHashValue);
 					}
 				}
-
-				// System.out.println(" End ");
 			}
-
 			return new keyValuePair<>(key, finalHashValue);
 		}
-
 		return null;
 	}
 
-	public List<keyValuePair<Integer, HashMap<Integer, Integer>>> numberReduce(
+	public List<keyValuePair<Integer, HashMap<Integer, Double>>> numberReduce(
 			List<groupByPair<Integer, HashMap<Integer, Integer>>> pairs) {
 
 		List<keyValuePair<Integer, HashMap<Integer, Integer>>> reducedList = new ArrayList<>();
+		List<keyValuePair<Integer, HashMap<Integer, Double>>> finalReducedList = new ArrayList<>();
+		
 		if (pairs != null) {
 
 			for (groupByPair<Integer, HashMap<Integer, Integer>> pair : pairs) {
-				// System.out.println(pairs);
-
 				reducedList.add(reducePairs(pair));
 			}
-
-			return reducedList;
+			for(int i=0; i<reducedList.size(); i++)
+			{
+				int sum=0;
+				HashMap<Integer, Double> finalHashValue = new HashMap<>();
+				for (Entry<Integer, Integer> item : reducedList.get(i).getValue().entrySet())
+				{
+					sum +=item.getValue();
+				}
+//				
+				for(Entry<Integer, Integer> item : reducedList.get(i).getValue().entrySet())
+				{
+					finalHashValue.put(item.getKey(), (double) item.getValue()/sum);
+				}
+				
+				finalReducedList.add( new keyValuePair<Integer,HashMap<Integer,Double>> (reducedList.get(i).getKey(),finalHashValue));
+				
+			}
+			return finalReducedList;
 		}
 
 		return null;

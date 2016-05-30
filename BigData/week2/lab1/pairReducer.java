@@ -62,9 +62,9 @@ public class pairReducer {
 			groupByPair<keyValuePair<Integer, Integer>, Integer> groupByPair) {
 
 		// keyValuePair<Integer,Integer> keyVal = new keyValuePair<>();
+		int sum = 0;
 		if (groupByPair != null) {
 			keyValuePair<Integer, Integer> key = groupByPair.getKey();
-			int sum = 0;
 			for (int val : groupByPair.getValues()) {
 				sum += val;
 			}
@@ -75,18 +75,43 @@ public class pairReducer {
 		return null;
 	}
 
-	public List<keyValuePair<keyValuePair<Integer, Integer>, Integer>> numberReduce(
+	public List<keyValuePair<keyValuePair<Integer, Integer>, Double>> numberReduce(
 			List<groupByPair<keyValuePair<Integer, Integer>, Integer>> pairs) {
 
 		List<keyValuePair<keyValuePair<Integer, Integer>, Integer>> reducedList = new ArrayList<>();
+		List<keyValuePair<keyValuePair<Integer, Integer>, Double>> finalReducedList = new ArrayList<>();
 		if (pairs != null) {
+			
+			int sum=0;
+			int prevKey=0;
 
 			for (groupByPair<keyValuePair<Integer, Integer>, Integer> pair : pairs) {
 
 				reducedList.add(reducePairs(pair));
 			}
+			
+			for(keyValuePair<keyValuePair<Integer,Integer>,Integer> finalPair: reducedList)
+			{
+				if(finalPair.getKey().getKey() != prevKey)
+				{
+					prevKey=0;
+					sum=0;
+				}
+				if(prevKey ==0)
+				{
+					sum=finalPair.getValue();
+					prevKey=finalPair.getKey().getKey();
+				}
+				if(finalPair.getKey().getKey()==prevKey)
+				{
+					if(finalPair.getKey().getValue() !=0)
+					{
+						finalReducedList.add(new keyValuePair<keyValuePair<Integer,Integer>,Double> (finalPair.getKey(), (double) finalPair.getValue()/ sum));
+					}
+				}
+			}
 
-			return reducedList;
+			return finalReducedList;
 		}
 
 		return null;
