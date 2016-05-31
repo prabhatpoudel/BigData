@@ -12,9 +12,9 @@ import week2Lab2.keyValuePair;
 
 public class invertedIndexMapper {
 
-	public List<keyValuePair<keyValuePair<String, String>, String>> valuesList = new ArrayList<>();
-	public List<keyValuePair<keyValuePair<String, String>, String>> relativeFrequency = new ArrayList<>();
-	public List<keyValuePair<String, String>> initialValue = new ArrayList<>();
+	public List<keyValuePair<keyValuePair<String, Integer>, Integer>> valuesList = new ArrayList<>();
+	public List<keyValuePair<keyValuePair<String, Integer>, Integer>> relativeFrequency = new ArrayList<>();
+	public List<keyValuePair<String, Integer>> initialValue = new ArrayList<>();
 
 	String filename;
 
@@ -22,25 +22,25 @@ public class invertedIndexMapper {
 		this.filename = fileLocation;
 	}
 
-	public List<keyValuePair<keyValuePair<String, String>, String>> getValuesList() {
+	public List<keyValuePair<keyValuePair<String, Integer>, Integer>> getValuesList() {
 		return valuesList;
 	}
 
-	public List<keyValuePair<keyValuePair<String, String>, String>> mapValues() {
+	public List<keyValuePair<keyValuePair<String, Integer>, Integer>> mapValues() {
 		try {
 			int lineNumber = 0;
-			List<String> firstLineArray = null ;
+			List<String> firstLineArray = null;
 			Scanner scan = new Scanner(new File(filename));
 			while (scan.hasNextLine()) {
 				Scanner line = new Scanner(scan.nextLine());
 				List<String> numberArray = new ArrayList<>();
-				System.out.println(lineNumber);
+				// System.out.println(lineNumber);
 				if (lineNumber == 0) {
-					 firstLineArray = new ArrayList<>();
+					firstLineArray = new ArrayList<>();
 					while (line.hasNext()) {
 						String val = line.next();
 						firstLineArray.add(val);
-						System.out.println(firstLineArray);
+						// System.out.println(firstLineArray);
 					}
 				} else {
 
@@ -53,19 +53,15 @@ public class invertedIndexMapper {
 					for (int i = 0; i < numberArray.size(); i++) {
 						if (numberArray.get(i).matches("\"??([A-Za-z]+-??[A-Za-z]+|[A-Za-z])\"??\\.??")) {
 							String word = numberArray.get(i);
-							word= word.replace(".", "");
-						valuesList
-								.add(new keyValuePair<keyValuePair<String, String>, String>(
-										new keyValuePair<String, String>(
-												word,
-												firstLineArray.get(2)),
-										"1"));
+							word = word.replace(".", "").toLowerCase();
+							valuesList.add(new keyValuePair<keyValuePair<String, Integer>, Integer>(
+									new keyValuePair<String, Integer>(word,  Integer.parseInt(firstLineArray.get(2))), 1));
 						}
 					}
-				
+
 				}
 				lineNumber++;
-				 System.out.println(valuesList);
+				// System.out.println(valuesList);
 			}
 
 		} catch (FileNotFoundException e) {
@@ -73,30 +69,35 @@ public class invertedIndexMapper {
 		return valuesList;
 	}
 
-	/*
-	 * public List<keyValuePair<keyValuePair<Integer, Integer>,Integer>>
-	 * inMapperPairs() { mapValues(); // System.out.println(valuesList);
-	 * List<keyValuePair<keyValuePair<Integer, Integer>,Integer>> inMapperList =
-	 * new ArrayList<>();
-	 * 
-	 * for (keyValuePair<keyValuePair<Integer, Integer>,Integer> valuePair :
-	 * valuesList) { if (inMapperList.size() < 1) { inMapperList.add(valuePair);
-	 * } else { boolean matched = false; for (int i = 0; i <
-	 * inMapperList.size(); i++) {
-	 * 
-	 * if
-	 * (inMapperList.get(i).getKey().getKey().equals(valuePair.getKey().getKey
-	 * ()) &&
-	 * inMapperList.get(i).getKey().getValue().equals(valuePair.getKey().getValue
-	 * ())) { //added for Relative Frequency int keyValue=
-	 * inMapperList.get(i).getValue(); int pairKeyValue= valuePair.getValue();
-	 * inMapperList.get(i).setValue(keyValue+pairKeyValue); matched = true;
-	 * break; } } //
-	 * relativeFrequency.get(i).setValue(relativeFrequency.s+pairKeyValue); if
-	 * (!matched) { inMapperList.add(valuePair); } } } return inMapperList;
-	 * 
-	 * }
-	 */
+	public List<keyValuePair<keyValuePair<String, Integer>, Integer>> inMapperPairs() {
+		mapValues(); // System.out.println(valuesList);
+		List<keyValuePair<keyValuePair<String, Integer>, Integer>> inMapperList = new ArrayList<>();
+
+		for (keyValuePair<keyValuePair<String, Integer>, Integer> valuePair : valuesList) {
+			if (inMapperList.size() < 1) {
+				inMapperList.add(valuePair);
+			} else {
+				boolean matched = false;
+				for (int i = 0; i < inMapperList.size(); i++) {
+
+					if (inMapperList.get(i).getKey().getKey().equals(valuePair.getKey().getKey())) { 
+						// added
+						int keyValue= inMapperList.get(i).getValue();
+						int pairKeyValue = valuePair.getValue();
+						inMapperList.get(i).setValue(keyValue + pairKeyValue);
+						matched = true;
+						break;
+					}
+				} 
+				if (!matched) {
+					inMapperList.add(valuePair);
+				}
+			}
+		}
+		return inMapperList;
+
+	}
+
 	public void printSortedList() {
 		System.out.println("-----------Sorted List-----------");
 		valuesList.stream().sorted().forEach(System.out::println);

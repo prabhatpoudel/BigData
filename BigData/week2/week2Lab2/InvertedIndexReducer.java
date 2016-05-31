@@ -9,25 +9,25 @@ import week2Lab2.groupByPair;
 
 public class InvertedIndexReducer {
 
-	public List<groupByPair<keyValuePair<String, String>, String>> groupKey(
-			List<keyValuePair<keyValuePair<String, String>, String>> list) {
-		List<groupByPair<keyValuePair<String, String>, String>> groupByPairs = new ArrayList<groupByPair<keyValuePair<String, String>, String>>();
+	public List<groupByPair<keyValuePair<String, Integer>, Integer>> groupKey(
+			List<keyValuePair<keyValuePair<String, Integer>, Integer>> list) {
+		List<groupByPair<keyValuePair<String, Integer>, Integer>> groupByPairs = new ArrayList<groupByPair<keyValuePair<String, Integer>, Integer>>();
 		if (list != null) {
 
-			InvertedIndexComparator<String, String, String> comparator = new InvertedIndexComparator<>();
+			InvertedIndexComparator<String, Integer, Integer> comparator = new InvertedIndexComparator<>();
 			comparator.descSort(list);
 
-			keyValuePair<String, String> prevKey = new keyValuePair<>();
-			groupByPair<keyValuePair<String, String>, String> groupPair = new groupByPair<keyValuePair<String, String>, String>();
-			for (keyValuePair<keyValuePair<String, String>, String> keyVal : list) {
+			keyValuePair<String, Integer> prevKey = new keyValuePair<>();
+			groupByPair<keyValuePair<String, Integer>, Integer> groupPair = new groupByPair<keyValuePair<String, Integer>, Integer>();
+			for (keyValuePair<keyValuePair<String, Integer>, Integer> keyVal : list) {
 
-				keyValuePair<String, String> key = keyVal.getKey();
-				String val = keyVal.getValue();
+				keyValuePair<String, Integer> key = keyVal.getKey();
+				Integer val = keyVal.getValue();
 
 				if (prevKey.getKey() != null) {
 					if (prevKey.getKey() == (key.getKey()) && prevKey.getValue() == (key.getValue())) {
-						List<String> values = groupPair.getValues();
-						List<String> listValues = new ArrayList<>(values);
+						List<Integer> values = groupPair.getValues();
+						List<Integer> listValues = new ArrayList<>(values);
 						listValues.add(val);
 						groupPair.setValues(listValues);
 					}
@@ -58,32 +58,48 @@ public class InvertedIndexReducer {
 		return null;
 	}
 
-	public keyValuePair<keyValuePair<String, String>, String> reducePairs(
-			groupByPair<keyValuePair<String, String>, String> groupByPair) {
+	public keyValuePair<String,keyValuePair<Integer,Integer>> reducePairs(
+			groupByPair<keyValuePair<String, Integer>, Integer> groupByPair) {
 
 		// keyValuePair<Integer,Integer> keyVal = new keyValuePair<>();
-		String sum = "";
+		int sum = 0;
 		if (groupByPair != null) {
-			keyValuePair<String, String> key = groupByPair.getKey();
-			for (String val : groupByPair.getValues()) {
+			keyValuePair<String, Integer> key = groupByPair.getKey();
+			for (int val : groupByPair.getValues()) {
 				sum += val;
 			}
 
-			return new keyValuePair<>(key, sum);
+			return new keyValuePair<>(key.getKey(), new keyValuePair<Integer,Integer> (key.getValue(),sum));
 		}
 
 		return null;
 	}
 
-	public List<keyValuePair<keyValuePair<String, String>, String>> numberReduce(
-			List<groupByPair<keyValuePair<String, String>, String>> pairs) {
+	public List<keyValuePair<String, List<keyValuePair<Integer, Integer>>>> numberReduce(
+			List<groupByPair<keyValuePair<String, Integer>, Integer>> pairs) {
 
-		List<keyValuePair<keyValuePair<String, String>, String>> reducedList = new ArrayList<>();
-		List<keyValuePair<keyValuePair<String, String>, String>> finalReducedList = new ArrayList<>();
-		if (pairs != null) {			
-			for (groupByPair<keyValuePair<String, String>, String> pair : pairs) {
-
-				reducedList.add(reducePairs(pair));
+		List<keyValuePair<String, List<keyValuePair<Integer, Integer>>>> reducedList = new ArrayList<>();
+		List<keyValuePair<keyValuePair<String, Integer>, Integer>> finalReducedList = new ArrayList<>();
+		if (pairs != null) {
+			
+			String prevKey="";
+			
+			for (groupByPair<keyValuePair<String, Integer>, Integer> pair : pairs) {
+				keyValuePair<String, keyValuePair<Integer, Integer>> reducePairs = reducePairs(pair);
+				
+				if(prevKey.equals(reducePairs.getKey()))
+				{
+					List<keyValuePair<Integer, Integer>> collect = new ArrayList<>(reducedList.get(reducedList.size() - 1).getValue());
+					collect.add(reducePairs.getValue());
+					reducedList.get(reducedList.size() - 1).setValue(collect);
+				}
+				else
+				{
+					reducedList.add(new keyValuePair<>(reducePairs.getKey(), Arrays.asList(
+					new keyValuePair<>(reducePairs.getValue().getKey(), reducePairs.getValue().getValue()))));
+				
+				}
+				prevKey=reducePairs.getKey();
 			}
 			return reducedList;
 		}
