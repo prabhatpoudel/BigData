@@ -1,4 +1,4 @@
-package lab2;
+package week2Lab2;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.regex.Pattern;
 
-import lab2.keyValuePair;
+import week2Lab2.keyValuePair;
 
 public class invertedIndexMapper {
 
@@ -34,11 +34,13 @@ public class invertedIndexMapper {
 			while (scan.hasNextLine()) {
 				Scanner line = new Scanner(scan.nextLine());
 				List<String> numberArray = new ArrayList<>();
+				System.out.println(lineNumber);
 				if (lineNumber == 0) {
 					 firstLineArray = new ArrayList<>();
 					while (line.hasNext()) {
 						String val = line.next();
 						firstLineArray.add(val);
+						System.out.println(firstLineArray);
 					}
 				} else {
 
@@ -49,16 +51,21 @@ public class invertedIndexMapper {
 						// System.out.println(numberArray);
 					}
 					for (int i = 0; i < numberArray.size(); i++) {
+						if (numberArray.get(i).matches("\"??([A-Za-z]+-??[A-Za-z]+|[A-Za-z])\"??\\.??")) {
+							String word = numberArray.get(i);
+							word= word.replace(".", "");
 						valuesList
 								.add(new keyValuePair<keyValuePair<String, String>, String>(
 										new keyValuePair<String, String>(
-												numberArray.get(i + 1),
-												firstLineArray.get(3)),
+												word,
+												firstLineArray.get(2)),
 										"1"));
+						}
 					}
-				lineNumber++;
+				
 				}
-				// System.out.println(valuesList);
+				lineNumber++;
+				 System.out.println(valuesList);
 			}
 
 		} catch (FileNotFoundException e) {

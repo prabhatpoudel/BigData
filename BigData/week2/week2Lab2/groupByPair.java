@@ -1,4 +1,4 @@
-package lab2;
+package week2Lab2;
 
 import java.util.List;
 

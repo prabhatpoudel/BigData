@@ -1,11 +1,11 @@
-package lab2;
+package week2Lab2;
 
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import lab2.groupByPair;
+import week2Lab2.groupByPair;
 
 public class InvertedIndexProcess {
 
@@ -34,7 +34,7 @@ public class InvertedIndexProcess {
 		List<List<keyValuePair<keyValuePair<String, String>,String>>> mappedPairs = new ArrayList<>();
 		for (int i = 0; i < mapper.length; i++) {
 			mapper[i] = new invertedIndexMapper(dir+
-					"/week2/lab2/Mapper"
+					"/week2/week2Lab2/Mapper"
 							+ i + ".txt");
 			
 			

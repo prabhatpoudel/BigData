@@ -1,4 +1,4 @@
-package lab2;
+package week2Lab2;
 
 public class keyValuePair<k , v>  {
 	private k key;

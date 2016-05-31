@@ -1,11 +1,11 @@
-package lab2;
+package week2Lab2;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-import lab2.keyValuePair;
-import lab2.groupByPair;
+import week2Lab2.keyValuePair;
+import week2Lab2.groupByPair;
 
 public class InvertedIndexReducer {
 
